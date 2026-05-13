@@ -1,5 +1,5 @@
 import { Row } from "@/components/row";
-import { useUserThemeColors } from "@/hooks/userThemesColors";
+import { useThemeColors } from "../hooks/useThemesColors";
 import { Image, TextInput } from "react-native";
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
 
 export function SearchBar({value, onchange}: Props) {
 
-    const colors = useUserThemeColors();
+    const colors = useThemeColors();
 
     return (
     <Row gap={8} style={[stylesSearchBar.wrapper, {backgroundColor: colors.grayWhite}]}>

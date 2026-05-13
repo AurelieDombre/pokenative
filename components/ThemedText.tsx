@@ -1,5 +1,5 @@
 import { TextProps, Text, StyleSheet } from "react-native"
-import { useUserThemeColors } from "@/hooks/userThemesColors";
+import { useThemeColors } from "../hooks/useThemesColors";
 import { Colors } from "@/constants/Colors";
 
 const styles = StyleSheet.create({
@@ -53,7 +53,7 @@ type Props = TextProps & {
 export function ThemedText({variant, color, style, ...rest}: Props) {
 
     // Récupérer les couleurs du thème de l'utilisateur
-    const colors = useUserThemeColors();
+    const colors = useThemeColors();
 
     return (
         //Appliquer un style en fonctione de la prop "variant" que je reçois, et la couleur en fonction de la prop "color" que je reçois, sinon utiliser les valeurs par défaut

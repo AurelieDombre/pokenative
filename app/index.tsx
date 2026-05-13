@@ -6,13 +6,13 @@ import { SortButton } from "@/components/sortButton";
 import { ThemedText } from "@/components/ThemedText";
 import { getPokemonIdFromUrl } from "@/functions/pokemon";
 import { useInfiniteFetchQuery } from "@/hooks/useFetchQuery";
-import { useUserThemeColors } from "@/hooks/userThemesColors";
+import { useThemeColors } from "../hooks/useThemesColors";
 import { useState } from "react";
 import { ActivityIndicator, FlatList, Image, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-  const colors = useUserThemeColors();
+  const colors = useThemeColors();
   // (_, k) =>({ name: `Pokémon name`, id: k + 1 }) est une fonction qui génère un objet avec un nom de pokémon et un id,
   // en fonction de l'index k du tableau généré par Array.from. Array.from({ length: 35 }) génère un tableau de 35 éléments, 
   // et (_, k) => ... est la fonction qui est appelée pour chaque élément du tableau, avec _ qui représente la valeur de l'élément (qui est undefined dans ce cas)

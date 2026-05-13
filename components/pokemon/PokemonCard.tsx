@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { useUserThemeColors } from "@/hooks/userThemesColors";
+import { useThemeColors } from "../../hooks/useThemesColors";
 import { Link } from "expo-router";
 import { Image, Pressable, StyleSheet, View, ViewStyle } from "react-native";
 import { Card } from "../card";
@@ -16,7 +16,7 @@ type Props = {
 // //!\\ Coller les balises  surtout pas d'espace entre sinon il ne capte pas l'enfant
 export function PokemonCard({ style, name, id }: Props) {
 
-    const colors = useUserThemeColors();
+    const colors = useThemeColors();
 
     return (
         <Link href={`/pokemon/${id}`} asChild>
