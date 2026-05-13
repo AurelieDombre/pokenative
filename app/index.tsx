@@ -1,15 +1,15 @@
-import { ThemedText } from "@/components/ThemedText";
-import { Link } from "expo-router";
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserThemeColors } from "@/hooks/userThemesColors";
-import { Card } from "@/components/Card";
-import { PokemonCard } from "@/components/pokemon/PokemonCard";
-import { useFetchQuery, useInfiniteFetchQuery } from "@/hooks/useFetchQuery";
-import { getPokemonIdFromUrl } from "@/functions/pokemon";
+import { Card } from "@/components/card";
+import { PokemonCard } from "@/components/pokemon/pokemonCard";
+import { Row } from "@/components/row";
 import { SearchBar } from "@/components/searchBar";
+import { SortButton } from "@/components/sortButton";
+import { ThemedText } from "@/components/ThemedText";
+import { getPokemonIdFromUrl } from "@/functions/pokemon";
+import { useInfiniteFetchQuery } from "@/hooks/useFetchQuery";
+import { useUserThemeColors } from "@/hooks/userThemesColors";
 import { useState } from "react";
-import { Row } from "@/components/Row";
+import { ActivityIndicator, FlatList, Image, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const colors = useUserThemeColors();
@@ -19,19 +19,27 @@ export default function Index() {
   // et k qui représente l'index de l'élément (de 0 à 34). En ajoutant 1 à k, on obtient des id de pokémon allant de 1 à 35.
 
   // Récupérer les données de l'api pour les pokémons, avec une limite de 21 pokémons 
-/*   const {data, isFetching} = useFetchQuery('/pokemon?limit=21');  */
+// const {data, isFetching} = useFetchQuery('/pokemon?limit=21');  
 // Récupérer les donnée de l'api pour les pokémons, avec une pagination infinie, en utilisant la fonction useInfiniteFetchQuery qui utilise la fonction useInfiniteQuery de react-query pour gérer la pagination, et en affichant un loader pendant le chargement des données
-  const { data, isFetching, fetchNextPage } = useInfiniteFetchQuery('/pokemon?limit=35');
+  const { data, isFetching, fetchNextPage } = useInfiniteFetchQuery('/pokemon?limit=21');
   // isFetching est une variable qui indique si les données sont en train d'être récupérées, pour afficher un loader pendant le chargement des données
   //fetchNextPage est une fonction qui permet de récupérer la page suivante de données, en l'appelant lorsque l'on atteint la fin de la liste dans la flatlist grâce à onEndReached.
 
   // Récupérer les résultats de l'api, qui sont les pokémons, et les stocker dans une variable
   /* const pokemons = data?.results ?? []  => si on fait avec la limitation de résultats*/
   // Réceptionner les pages pour avoir un effet infinite scroll, et les aplatir pour avoir un tableau de pokémons à afficher dans la flatlist
-  const pokemons = data?.pages.flatMap(page => page.results) ?? [];
-
+  //.map(results => ({name: results.name, id: getPokemonIdFromUrl(results.url) => renvoi un nouvel objet avec nom du Pokémon et son id
+  const pokemons = data?.pages.flatMap(page => page.results.map(results => ({name: results.name, id: getPokemonIdFromUrl(results.url)}))) ?? [];
   //? SearchBar
   const [search, setSearch] = useState('');
+   // Défini le filtre par id ou name, id par defaut
+  const [sortKey, setSortKey] = useState<"id"|"name">("id")
+  // On ne peux pas faire appel à l'api pour la recherche alors on va filtrer la liste des pokémons en fonction de ce que l'ont tape dans la searchBar. Pour que le filtre fonctionne on transforme en tableau les pokémons 
+  const filteredPokemons =[...(search ?
+      pokemons.filter(pokemons => pokemons.name.includes(search.toLocaleLowerCase()) ||
+      pokemons.id.toString() === search) : pokemons)].sort((a,b) => (a[sortKey] < b[sortKey] ? -1 : 1));
+ 
+
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.tint }]}>
@@ -42,12 +50,13 @@ export default function Index() {
           Pokédex
         </ThemedText>
       </Row>
-      <Row >
+      <Row gap={16}>
          {/* //? SearchBar */}
         <SearchBar value={search} onchange={setSearch} />
+        <SortButton value={sortKey} onChange={setSortKey} />
       </Row>
       <Card style={styles.cards}>
-        <FlatList data={pokemons} 
+        <FlatList data={filteredPokemons} 
                   numColumns={3}
                   columnWrapperStyle={styles.gridGap}
                   contentContainerStyle={[styles.gridGap, styles.list]}
@@ -55,15 +64,15 @@ export default function Index() {
                   ListFooterComponent={
                     isFetching ? <ActivityIndicator color={colors.tint} /> : null
                   }
-                  /* Permet de détecter lorsqu'on atteint la fin de la liste, pour charger les pages suivantes */
-                  onEndReached={() => {
+                  /* Permet de détecter lorsqu'on atteint la fin de la liste, pour charger les pages suivantes sauf si on a une recherche */
+                  onEndReached={search ? undefined : () => {
                     if (!isFetching) {
                       fetchNextPage();
                     }
                   }}
                   renderItem={({ item }) => 
             // Afficher le nom et l'id du pokémon dans une vue, en utilisant le composant ThemedText pour le style du texte
-            <PokemonCard name={item.name} id={getPokemonIdFromUrl(item.url)} style={{ flex: 1/3}}  /> } keyExtractor={(item) => item.url} 
+            <PokemonCard name={item.name} id={item.id} style={{ flex: 1/3}}  /> } keyExtractor={(item) => item.id.toString()} 
           />
       </Card>
       

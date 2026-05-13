@@ -1,8 +1,8 @@
 import { ThemedText } from "@/components/ThemedText";
-import { Image, ViewStyle, StyleSheet, View, Pressable } from "react-native";
-import { Card } from "../Card";
 import { useUserThemeColors } from "@/hooks/userThemesColors";
 import { Link } from "expo-router";
+import { Image, Pressable, StyleSheet, View, ViewStyle } from "react-native";
+import { Card } from "../card";
 
 
 type Props = {

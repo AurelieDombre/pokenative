@@ -1,6 +1,6 @@
-import { View, TextInput, Image } from "react-native";
-import { Row } from "@/components/Row";
+import { Row } from "@/components/row";
 import { useUserThemeColors } from "@/hooks/userThemesColors";
+import { Image, TextInput } from "react-native";
 
 type Props = {
     value: string,
