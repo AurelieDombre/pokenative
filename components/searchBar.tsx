@@ -1,0 +1,38 @@
+import { View, TextInput, Image } from "react-native";
+import { Row } from "@/components/Row";
+import { useUserThemeColors } from "@/hooks/userThemesColors";
+
+type Props = {
+    value: string,
+    onchange: (text: string) => void,
+}
+
+export function SearchBar({value, onchange}: Props) {
+
+    const colors = useUserThemeColors();
+
+    return (
+    <Row gap={8} style={[stylesSearchBar.wrapper, {backgroundColor: colors.grayWhite}]}>
+        <Image  source={require('@/assets/icons/search.png')} width={16} height={16}/>
+        <TextInput onChangeText={onchange} value={value}  placeholder="Rechercher..." />
+    </Row>
+    )
+}
+
+const stylesSearchBar = {
+    wrapper:{
+        flex: 1,
+        borderRadius: 16,
+        height: 32,
+        padding: 12,
+        margin: 12,
+        marginTop: 16,
+    },
+    input:{
+        flex: 1,
+        height: 16,
+        fontSize: 10,
+        lineHeight: 16, 
+    },
+    
+}

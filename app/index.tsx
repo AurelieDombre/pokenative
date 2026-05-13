@@ -7,6 +7,9 @@ import { Card } from "@/components/Card";
 import { PokemonCard } from "@/components/pokemon/PokemonCard";
 import { useFetchQuery, useInfiniteFetchQuery } from "@/hooks/useFetchQuery";
 import { getPokemonIdFromUrl } from "@/functions/pokemon";
+import { SearchBar } from "@/components/searchBar";
+import { useState } from "react";
+import { Row } from "@/components/Row";
 
 export default function Index() {
   const colors = useUserThemeColors();
@@ -27,15 +30,22 @@ export default function Index() {
   // Réceptionner les pages pour avoir un effet infinite scroll, et les aplatir pour avoir un tableau de pokémons à afficher dans la flatlist
   const pokemons = data?.pages.flatMap(page => page.results) ?? [];
 
+  //? SearchBar
+  const [search, setSearch] = useState('');
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.tint }]}>
 
-      <View style={styles.header}>
+      <Row style={styles.header} >
         <Image source={require('@/assets/images/pokeball.png')} width={24} height={24}/>
         <ThemedText variant="headline" color="grayLight">
           Pokédex
         </ThemedText>
-      </View>
+      </Row>
+      <Row >
+         {/* //? SearchBar */}
+        <SearchBar value={search} onchange={setSearch} />
+      </Row>
       <Card style={styles.cards}>
         <FlatList data={pokemons} 
                   numColumns={3}
@@ -64,11 +74,22 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 4,
+    gap: 16,
   },
   header: {
+ /* Maintenatn qu'on passe de View à Row plus besoin de :
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center', */
     gap: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 12,
+    marginTop: 8,
+  },
+  body:{
+    flex: 1,
+    marginTop: 16,
   },
   cards:{
     flex: 1,

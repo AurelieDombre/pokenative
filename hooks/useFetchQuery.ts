@@ -4,7 +4,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 const endpoint = 'https://pokeapi.co/api/v2'; // L'endpoint de l'api pour récupérer les pokémons, avec une limite de 35 pokémons
 
-// Définir les points d'entrée de l'API. JE vais lui donner les résultats que je vais obtenir
+// Définir les points d'entrée de l'API. Je vais lui donner les résultats que je veux obtenir
 type API ={
     '/pokemon?limit=21': {
         count: number;

@@ -11,13 +11,13 @@ export function Card({style, ...rest}: Props) {
     return (
         <View style={[style, styles, {backgroundColor: colors.grayWhite}]} {...rest} /> 
     )
-
 }
 
 
 
 const styles = {
     borderRadius: 8,
+    marginTop: 16,
     overflow: 'hidden',
     ...Shadows.dp2, // j'applique l'ombre dp2 à ma card, en utilisant le spread operator pour ajouter les propriétés de l'ombre à mon style
 } satisfies ViewStyle; // satisfies permet de vérifier que le type de styles est bien un ViewStyle, et que les propriétés sont valides pour une view, sinon il y aura une erreur de type.
