@@ -1,12 +1,13 @@
 
 import { useThemeColors } from '../hooks/useThemesColors';
-import React from 'react'
-import { StyleSheet, View, Image, Pressable, Modal } from 'react-native'
+import React, { useRef } from 'react'
+import { StyleSheet, View, Image, Pressable, Modal, Dimensions } from 'react-native'
 import { useState } from "react";
 import { ThemedText } from '@/components/ThemedText'
 import { Card } from '@/components/card'
 import { Row } from '@/components/row'
 import { Radio } from '@/components/radio'
+import { Shadows } from '@/constants/Shadows'
 
 
 const stylesFilters = StyleSheet.create({
@@ -26,7 +27,7 @@ const stylesFilters = StyleSheet.create({
     },
     popup: {
         position: "absolute",
-        elevation: 2,
+        elevation: 2, // ou shadows si IOS
         gap: 16,
         padding: 4,
         paddingTop: 16,
@@ -34,6 +35,7 @@ const stylesFilters = StyleSheet.create({
         right: 0,
         width: 113,
         borderRadius: 12,
+
     },
     title: {
         marginLeft: 20,
@@ -51,28 +53,46 @@ type Props = {
     onChange: (value: "id" | "name") => void
 }
 
+// Bouton radio pour le modal
+const options = [
+    { label: "Number", value: "id" },
+    { label: "Name", value: "name" },
+] as const
 
 export function SortButton({ value, onChange }: Props) {
     const colors = useThemeColors();
     const [sortKey, setSortKey] = useState<"id" | "name">("id");
     const [isModalVisible, setModalVisible] = useState<boolean>(false);
+    // Sauvegarde l'emplacement du modal
+    const buttonRef = useRef<View>(null);
+    const [position, setPosition] = useState < null | {
+        top: number
+        right: number
+    } >(null)
+    // Quand on ouvre le bouton il faut générer la valeur de position avec measureInWindow qui permet de mesurer l'élément dans la fenêtre
     const onOpen = () => {
+        buttonRef.current?.measureInWindow((x, y, width, height) => {
+            setPosition({
+                top: y + height,
+                //On veut la position par rapport à la droite de la fenetre, donc on get la taille de la fenetre, on récup la largeur auquel on retire x et la largeur de l'élément
+                right: Dimensions.get("window").width - x - width,
+            })
+            setModalVisible(true);
+        })
         setModalVisible(true);
     }
     const onClose = () => {
         setModalVisible(false);
     }
 
-    // Bouton radio pour le modal
-    const options = [
-        { label: "Number", value: "id" },
-        { label: "Name", value: "name" },
-    ] as const
+
 
     return (
         <>
             <Pressable onPress={onOpen}>
-                <View style={[stylesFilters.button, { backgroundColor: colors.grayWhite }]}>
+                <View
+                    ref={buttonRef}
+                    style={[stylesFilters.button, { backgroundColor: colors.grayWhite }]}>
                     <Image
                         source={
                             sortKey === "id"
@@ -83,9 +103,9 @@ export function SortButton({ value, onChange }: Props) {
                     />
                 </View>
             </Pressable>
-            <Modal transparent visible={isModalVisible} onRequestClose={onClose}>
+            <Modal animationType={'fade'} transparent visible={isModalVisible} onRequestClose={onClose}>
                 <Pressable style={stylesFilters.backdrop} onPress={onClose} />
-                <View style={[stylesFilters.popup, {backgroundColor: colors.tint}]}>
+                <View style={[stylesFilters.popup, {backgroundColor: colors.tint, ...position }]}>
                     <ThemedText style={stylesFilters.title} variant={"subtitle2"} color={"grayWhite"}>Sort by : </ThemedText>
                     <Card style={stylesFilters.card}>
                         {options.map((option) => (

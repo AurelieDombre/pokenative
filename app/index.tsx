@@ -50,30 +50,31 @@ export default function Index() {
           Pokédex
         </ThemedText>
       </Row>
-      <Row gap={16}>
+      <Row gap={16} style={styles.form}>
          {/* //? SearchBar */}
         <SearchBar value={search} onchange={setSearch} />
         <SortButton value={sortKey} onChange={setSortKey} />
       </Row>
       <Card style={styles.cards}>
-        <FlatList data={filteredPokemons} 
-                  numColumns={3}
-                  columnWrapperStyle={styles.gridGap}
-                  contentContainerStyle={[styles.gridGap, styles.list]}
-                  /* Affiche un petit loader pendant le chargement des datas */
-                  ListFooterComponent={
-                    isFetching ? <ActivityIndicator color={colors.tint} /> : null
-                  }
-                  /* Permet de détecter lorsqu'on atteint la fin de la liste, pour charger les pages suivantes sauf si on a une recherche */
-                  onEndReached={search ? undefined : () => {
-                    if (!isFetching) {
-                      fetchNextPage();
-                    }
-                  }}
-                  renderItem={({ item }) => 
-            // Afficher le nom et l'id du pokémon dans une vue, en utilisant le composant ThemedText pour le style du texte
-            <PokemonCard name={item.name} id={item.id} style={{ flex: 1/3}}  /> } keyExtractor={(item) => item.id.toString()} 
-          />
+        <FlatList
+            data={filteredPokemons}
+            numColumns={3}
+            columnWrapperStyle={styles.gridGap}
+            contentContainerStyle={[styles.gridGap, styles.list]}
+            /* Affiche un petit loader pendant le chargement des datas */
+            ListFooterComponent={
+              isFetching ? <ActivityIndicator color={colors.tint} /> : null
+            }
+            /* Permet de détecter lorsqu'on atteint la fin de la liste, pour charger les pages suivantes sauf si on a une recherche */
+            onEndReached={search ? undefined : () => {
+              if (!isFetching) {
+                fetchNextPage();
+              }
+            }}
+            renderItem={({ item }) =>
+              // Afficher le nom et l'id du pokémon dans une vue, en utilisant le composant ThemedText pour le style du texte
+            <PokemonCard name={item.name} id={item.id} style={{ flex: 1/3}}  /> } keyExtractor={(item) => item.id.toString()}
+        />
       </Card>
       
     </SafeAreaView>
@@ -108,5 +109,8 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 12,
+  },
+  form:{
+    paddingHorizontal: 12,
   }
 });
