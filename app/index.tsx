@@ -9,7 +9,7 @@ import { useInfiniteFetchQuery } from "@/hooks/useFetchQuery";
 import { useThemeColors } from "../hooks/useThemesColors";
 import { useState } from "react";
 import { ActivityIndicator, FlatList, Image, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { RootView } from '@/components/rootView'
 
 export default function Index() {
   const colors = useThemeColors();
@@ -42,8 +42,7 @@ export default function Index() {
 
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.tint }]}>
-
+    <RootView> {/* RootView est un component créer pour éviter de répéter : SafeAreaView */}
       <Row style={styles.header} >
         <Image source={require('@/assets/images/pokeball.png')} width={24} height={24}/>
         <ThemedText variant="headline" color="grayLight">
@@ -77,16 +76,12 @@ export default function Index() {
         />
       </Card>
       
-    </SafeAreaView>
+    </RootView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 4,
-    gap: 16,
-  },
+
   header: {
  /* Maintenatn qu'on passe de View à Row plus besoin de :
     flexDirection: 'row',

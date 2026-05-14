@@ -2,14 +2,14 @@ import { Shadows } from "@/constants/Shadows";
 import { useThemeColors } from "../hooks/useThemesColors";
 import { View, ViewProps, ViewStyle } from "react-native";
 
-type Props = ViewProps 
+type Props = ViewProps
 
 //dans la fonction card, j'extrait le style des props, pour pouvoir l'envoyer à la view, et je passe le reste des props à la view aussi, pour pouvoir utiliser les autres props de view comme "onPress" ou "children"
 export function Card({style, ...rest}: Props) {
     // Récupérer els couleurs du thème
     const colors = useThemeColors();
     return (
-        <View style={[style, styles, {backgroundColor: colors.grayWhite}]} {...rest} /> 
+        <View style={[style, styles, {backgroundColor: colors.grayWhite}]} {...rest} />
     )
 }
 

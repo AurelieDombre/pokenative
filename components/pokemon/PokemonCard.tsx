@@ -3,6 +3,7 @@ import { useThemeColors } from "../../hooks/useThemesColors";
 import { Link } from "expo-router";
 import { Image, Pressable, StyleSheet, View, ViewStyle } from "react-native";
 import { Card } from "../card";
+import { getPokemonArtwork } from '@/functions/pokemon'
 
 
 type Props = {
@@ -25,7 +26,7 @@ export function PokemonCard({ style, name, id }: Props) {
                     <View style={[styles.shadow, { backgroundColor: colors.grayBackground }]} /> {/* Mettre une ombre sous le card, placer en premier car en dernier cela passe au-dessus des éléments */}
                     {/* Met 3 zero avant le chiffre de l'id */}
                     <ThemedText style={styles.id} variant="caption" color="grayMedium">#{id.toString().padStart(3, '0')}</ThemedText>
-                    <Image source={{ uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png` }} style={{ width: 72, height: 72 }} />
+                    <Image source={{ uri: getPokemonArtwork(id) }} style={{ width: 72, height: 72 }} />
                     <ThemedText variant="body3">{name}</ThemedText>
                     {/* <View style={[styles.shadow, { backgroundColor: colors.grayBackground }]} /> Si on veut mettre cet élément à la fin il faut ajouter un z-index dans le style */}
                 </Card>
