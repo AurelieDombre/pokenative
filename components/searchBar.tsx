@@ -25,8 +25,8 @@ const stylesSearchBar = {
         borderRadius: 16,
         height: 32,
         padding: 12,
-        margin: 12,
-        marginTop: 16,
+        margin: 8,
+        marginTop: 3,
     },
     input:{
         flex: 1,

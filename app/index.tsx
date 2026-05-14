@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     gap: 16,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    marginBottom: 12,
+    marginBottom: 8,
     marginTop: 8,
   },
   body:{
