@@ -6,9 +6,10 @@ import { ThemedText } from '@/components/ThemedText'
 import { useFetchQuery } from '@/hooks/useFetchQuery'
 import { Colors } from '@/constants/Colors'
 import { useThemeColors } from '@/hooks/useThemesColors'
-import { getPokemonArtwork } from '@/functions/pokemon'
+import { formatHeight, formatWeight, getPokemonArtwork } from '@/functions/pokemon'
 import { Card } from '@/components/card'
 import { PokemonType } from '@/components/pokemon/pokemonType'
+import { PokemonSpec } from '@/components/pokemon/pokemonSpec'
 
 const styleDetailPokemon = StyleSheet.create({
 
@@ -49,10 +50,16 @@ export default function Pokemon() {
     const colors = useThemeColors()
     const params = useLocalSearchParams()as {id: string};
     const {data: pokemon} = useFetchQuery("/pokemon/[id]", {id: params.id})
+    const {data: species} = useFetchQuery("/pokemon-species/[id]", {id: params.id})
+    // Récupère la bio des pokémons via le language dans l'api ex: https://pokeapi.co/api/v2/pokemon-species/1/ "flavor_text": "A strange seed was\nplanted on its\nback at birth.\fThe plant sprouts\nand grows with\nthis POKéMON.",
+    const bio = species?.flavor_text_entries
+        ?.find(({language}) => language.name === 'en')
+        ?.flavor_text.replaceAll("\n",".")
     // Pour pouvoir changer la couleur en fonction du type de pokémon. Le type est récupérer dans l'api
     const mainType = pokemon?.types?.[0]?.type.name
     const colorType = mainType ? Colors.type[mainType] : colors.tint
     const typeOfPokemon = pokemon?.types ?? []
+
 
     if (pokemon) {
         return (
@@ -94,9 +101,22 @@ export default function Pokemon() {
                             <ThemedText variant={'subtitle1'} style={{ color: colorType }}>
                                 About
                             </ThemedText>
-
-
-
+                            <Row>
+                                <PokemonSpec title={formatWeight(pokemon?.weight)} description={'Weight'} icon={require('@/assets/icons/detail_pokemon/weight.png')} style={{
+                                    borderStyle: "solid",
+                                    borderRightWidth: 1,
+                                    borderColor: colors.grayLight
+                                }}/>
+                                <PokemonSpec title={formatHeight(pokemon?.height)} description={'Height'} icon={require('@/assets/icons/detail_pokemon/straighten.png')} style={{
+                                    borderStyle: "solid",
+                                    borderRightWidth: 1,
+                                    borderColor: colors.grayLight
+                                }}/>
+                                <PokemonSpec title={pokemon?.moves.slice(0,2).map(move => move.move.name).join("\n")} description={'Moves'} />
+                            </Row>
+                            <ThemedText>
+                                {bio}
+                            </ThemedText>
 
                             <ThemedText variant={'subtitle1'} style={{ color: colorType }}>
                                 Base Stats

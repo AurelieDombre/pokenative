@@ -34,6 +34,14 @@ type API ={
             };
         }[];
     };
+    "/pokemon-species/[id]":{
+        flavor_text_entries:{
+            flavor_text: string;
+            language: {
+                name: string;
+            }
+        }[]
+    }
 }
 
 // <T extends keyof API> signifie que la fonction useFetchQuery prend un paramètre de type T qui doit être une clé de l'interface API, c'est à dire une des routes de l'api que j'ai définie dans l'interface API, 
