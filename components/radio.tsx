@@ -28,7 +28,6 @@ export function Radio({ checked }: Props) {
     const colors = useThemeColors()
     return (
         <View style={[styles.radio, {borderColor: colors.tint}]}>
-
             {checked && <View style={[styles.radioInner, {backgroundColor: colors.tint}]}/>}
         </View>
     )

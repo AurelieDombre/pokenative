@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ThemedText } from '@/components/ThemedText'
 import { Card } from '@/components/card'
 import { Row } from '@/components/row'
-import {Radio} from '@/components/radio'
+import { Radio } from '@/components/radio'
 
 
 const stylesFilters = StyleSheet.create({
@@ -21,29 +21,29 @@ const stylesFilters = StyleSheet.create({
         zIndex: 6,
     },
     backdrop: {
-         flex: 1,
-         backgroundColor: "rgba(0, 0, 0, 0.3)",
-     },
-     popup: {
-         position: "absolute",
-         elevation: 2,
-         gap: 16,
-         padding: 4,
-         paddingTop: 16,
-         top: 0,
-         right: 0,
-         width: 113,
-         borderRadius: 12,
-     },
-     title: {
-         marginLeft: 20,
-     },
-     card: {
-         paddingVertical: 16,
-         paddingLeft: 20,
-         gap: 16,
-         alignItems: "flex-start",
-     },
+        flex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.3)",
+    },
+    popup: {
+        position: "absolute",
+        elevation: 2,
+        gap: 16,
+        padding: 4,
+        paddingTop: 16,
+        top: 0,
+        right: 0,
+        width: 113,
+        borderRadius: 12,
+    },
+    title: {
+        marginLeft: 20,
+    },
+    card: {
+        paddingVertical: 16,
+        paddingLeft: 20,
+        gap: 16,
+        alignItems: "flex-start",
+    },
 });
 
 type Props = {
@@ -54,7 +54,7 @@ type Props = {
 
 export function SortButton({ value, onChange }: Props) {
     const colors = useThemeColors();
-    const [sortKey, setSortKey] = useState<"id"|"name">("id");
+    const [sortKey, setSortKey] = useState<"id" | "name">("id");
     const [isModalVisible, setModalVisible] = useState<boolean>(false);
     const onOpen = () => {
         setModalVisible(true);
@@ -64,15 +64,15 @@ export function SortButton({ value, onChange }: Props) {
     }
 
     // Bouton radio pour le modal
-    const option = [
-        {label: "Number", value: "id" },
-        {label: "Name", value: "name" },
+    const options = [
+        { label: "Number", value: "id" },
+        { label: "Name", value: "name" },
     ] as const
 
     return (
         <>
             <Pressable onPress={onOpen}>
-                <View style={[stylesFilters.button, {backgroundColor: colors.grayWhite}]}>
+                <View style={[stylesFilters.button, { backgroundColor: colors.grayWhite }]}>
                     <Image
                         source={
                             sortKey === "id"
@@ -85,10 +85,10 @@ export function SortButton({ value, onChange }: Props) {
             </Pressable>
             <Modal transparent visible={isModalVisible} onRequestClose={onClose}>
                 <Pressable style={stylesFilters.backdrop} onPress={onClose} />
-                <View style={stylesFilters.popup}>
+                <View style={[stylesFilters.popup, {backgroundColor: colors.tint}]}>
                     <ThemedText style={stylesFilters.title} variant={"subtitle2"} color={"grayWhite"}>Sort by : </ThemedText>
                     <Card style={stylesFilters.card}>
-                        {option.map((option) => (
+                        {options.map((option) => (
                             <Pressable
                                 onPress={() => {
                                     setSortKey(option.value);
