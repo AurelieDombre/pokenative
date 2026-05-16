@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router'
-import { StyleSheet, Image, Pressable, View, Text } from 'react-native'
+import { StyleSheet, Image, Pressable, View } from 'react-native'
 import { RootView } from '@/components/rootView'
 import { Row } from '@/components/row'
 import { ThemedText } from '@/components/ThemedText'
@@ -10,6 +10,8 @@ import { formatHeight, formatWeight, getPokemonArtwork } from '@/functions/pokem
 import { Card } from '@/components/card'
 import { PokemonType } from '@/components/pokemon/pokemonType'
 import { PokemonSpec } from '@/components/pokemon/pokemonSpec'
+import { PokemonStat } from '@/components/pokemon/pokemonStat'
+import { ScrollView } from 'react-native';
 
 const styleDetailPokemon = StyleSheet.create({
 
@@ -38,11 +40,16 @@ const styleDetailPokemon = StyleSheet.create({
     card:{
         paddingTop: 56,
         paddingHorizontal: 20,
+        paddingBottom: 20,
         gap: 16,
         alignItems: 'center',
     },
     tags:{
         justifyContent: 'center',
+    },
+    stats:{
+        width: '100%',
+        gap: 8,
     }
 })
 
@@ -59,73 +66,83 @@ export default function Pokemon() {
     const mainType = pokemon?.types?.[0]?.type.name
     const colorType = mainType ? Colors.type[mainType] : colors.tint
     const typeOfPokemon = pokemon?.types ?? []
+    // const pokemonStat = pokemon.stats
 
 
     if (pokemon) {
         return (
-            <RootView style={{ backgroundColor: colorType }}>
-                <View>
-                    <Image style={styleDetailPokemon.pokeball} source={require('@/assets/icons/detail_pokemon/pokeball-background.png')} width={208} height={208} />
-                    <Row style={styleDetailPokemon.header}>
-                        <Pressable onPress={router.back}>
-                            <Row gap={8}>
-                                <Image source={require('@/assets/icons/detail_pokemon/arrow_back.png')} width={32} height={32} />
-                                <ThemedText variant={'headline'} color={'grayWhite'}>
-                                    {pokemon?.name}
+            <ScrollView>
+                <RootView backgroundColor={colorType}>
+                    <View>
+                        <Image style={styleDetailPokemon.pokeball} source={require('@/assets/icons/detail_pokemon/pokeball-background.png')} width={208} height={208} />
+                        <Row style={styleDetailPokemon.header}>
+                            <Pressable onPress={router.back}>
+                                <Row gap={8}>
+                                    <Image source={require('@/assets/icons/detail_pokemon/arrow_back.png')} width={32} height={32} />
+                                    <ThemedText variant={'headline'} color={'grayWhite'}>
+                                        {pokemon?.name}
+                                    </ThemedText>
+                                </Row>
+                            </Pressable>
+
+                            <ThemedText variant={'subtitle2'} color={'grayWhite'}>
+                                #{params.id.padStart(3,'0')}
+                            </ThemedText>
+
+                        </Row>
+                        <View style={styleDetailPokemon.body}>
+                            {/* Image flottante */}
+                            <Image
+                                style={styleDetailPokemon.artwork}
+                                source={{ uri: getPokemonArtwork(params.id) }}
+                            />
+
+                            {/* Card */}
+                            <Card style={styleDetailPokemon.card}>
+                                <Row style={styleDetailPokemon.tags}>
+                                    {typeOfPokemon.map((pokemonType) => (
+                                        <PokemonType
+                                            name={pokemonType.type.name as keyof typeof Colors.type}
+                                            key={pokemonType.type.name}
+                                        />
+                                    ))}
+                                </Row>
+                                <ThemedText variant={'subtitle1'} style={{ color: colorType }}>
+                                    About
                                 </ThemedText>
-                            </Row>
-                        </Pressable>
+                                <Row>
+                                    <PokemonSpec title={formatWeight(pokemon?.weight)} description={'Weight'} icon={require('@/assets/icons/detail_pokemon/weight.png')} style={{
+                                        borderStyle: "solid",
+                                        borderRightWidth: 1,
+                                        borderColor: colors.grayLight
+                                    }}/>
+                                    <PokemonSpec title={formatHeight(pokemon?.height)} description={'Height'} icon={require('@/assets/icons/detail_pokemon/straighten.png')} style={{
+                                        borderStyle: "solid",
+                                        borderRightWidth: 1,
+                                        borderColor: colors.grayLight
+                                    }}/>
+                                    <PokemonSpec title={pokemon?.moves.slice(0,2).map(move => move.move.name).join("\n")} description={'Moves'} />
+                                </Row>
+                                <ThemedText>
+                                    {bio}
+                                </ThemedText>
+                                <ThemedText variant={'subtitle1'} style={{ color: colorType }}>
+                                    Base Stats
+                                </ThemedText>
+                                <View style={styleDetailPokemon.stats}>
+                                    {/* Récupere via l'api le nom et la valeur de la stat mais le nom est en entier */}
+                                    {pokemon?.stats.map(stat =>
+                                        <PokemonStat key={stat.stat.name} nameStat={stat.stat.name} value={stat.base_stat} color={colorType} />
+                                    )}
 
-                        <ThemedText variant={'subtitle2'} color={'grayWhite'}>
-                            #{params.id.padStart(3,'0')}
-                        </ThemedText>
+                                </View>
 
-                    </Row>
-                    <View style={styleDetailPokemon.body}>
-                        {/* Image flottante */}
-                        <Image
-                            style={styleDetailPokemon.artwork}
-                            source={{ uri: getPokemonArtwork(params.id) }}
-                        />
-
-                        {/* Card */}
-                        <Card style={styleDetailPokemon.card}>
-                            <Row style={styleDetailPokemon.tags}>
-                                {typeOfPokemon.map((pokemonType) => (
-                                    <PokemonType
-                                        name={pokemonType.type.name as keyof typeof Colors.type}
-                                        key={pokemonType.type.name}
-                                    />
-                                ))}
-                            </Row>
-                            <ThemedText variant={'subtitle1'} style={{ color: colorType }}>
-                                About
-                            </ThemedText>
-                            <Row>
-                                <PokemonSpec title={formatWeight(pokemon?.weight)} description={'Weight'} icon={require('@/assets/icons/detail_pokemon/weight.png')} style={{
-                                    borderStyle: "solid",
-                                    borderRightWidth: 1,
-                                    borderColor: colors.grayLight
-                                }}/>
-                                <PokemonSpec title={formatHeight(pokemon?.height)} description={'Height'} icon={require('@/assets/icons/detail_pokemon/straighten.png')} style={{
-                                    borderStyle: "solid",
-                                    borderRightWidth: 1,
-                                    borderColor: colors.grayLight
-                                }}/>
-                                <PokemonSpec title={pokemon?.moves.slice(0,2).map(move => move.move.name).join("\n")} description={'Moves'} />
-                            </Row>
-                            <ThemedText>
-                                {bio}
-                            </ThemedText>
-
-                            <ThemedText variant={'subtitle1'} style={{ color: colorType }}>
-                                Base Stats
-                            </ThemedText>
-
-                        </Card>
+                            </Card>
+                        </View>
                     </View>
-                </View>
-            </RootView>
+                </RootView>
+            </ScrollView>
+
         );
     }
 
