@@ -94,6 +94,8 @@ export default function Pokemon() {
     const onNext = () => {
         router.replace({pathname : '/pokemon/[id]', params: {id: Math.min(id +1,150)}})
     }
+    const isFirst = id === 1
+    const isLast = id === 150
 
     if (pokemon) {
         return (
@@ -118,24 +120,34 @@ export default function Pokemon() {
                         </Row>
                         <View style={styleDetailPokemon.body}>
                             <Row style={styleDetailPokemon.rowArtwok}>
-                                <Pressable onPress={onPrevious}>
-                                    <Image
-                                        source={require('@/assets/icons/detail_pokemon/chevron_left.png')}
-                                        width={24} height={24}
-                                    />
-                                </Pressable>
+                                {/*Si l'id est = 1 alors n'affiche pas le chevron */}
+                                {isFirst ?(
+                                    <View style={{ width: 24, height: 24 }}></View>
+                                ) : (
+                                    <Pressable onPress={onPrevious}>
+                                        <Image
+                                            source={require('@/assets/icons/detail_pokemon/chevron_left.png')}
+                                            width={24} height={24}
+                                        />
+                                    </Pressable>
+                                )}
+
                                 <Pressable onPress={onImagePress}>
                                     <Image
                                         style={styleDetailPokemon.artwork}
                                         source={{ uri: getPokemonArtwork(params.id) }}
                                     />
                                 </Pressable>
-                                <Pressable onPress={onNext}>
-                                    <Image
-                                        source={require('@/assets/icons/detail_pokemon/chevron_right.png')}
-                                        width={24} height={24}
-                                    />
-                                </Pressable>
+                                {isLast ?(
+                                    <View style={{ width: 24, height: 24 }}></View>
+                                ) : (
+                                    <Pressable onPress={onNext}>
+                                        <Image
+                                            source={require('@/assets/icons/detail_pokemon/chevron_right.png')}
+                                            width={24} height={24}
+                                        />
+                                    </Pressable>
+                                )}
                             </Row>
 
                             {/* Card */}

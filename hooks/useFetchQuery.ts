@@ -75,7 +75,8 @@ export function useFetchQuery<T extends keyof API>(path: T, params?: Record< str
     return useQuery({
         queryKey: [localUrl],
         queryFn: async () => {
-            await wait(1); // Simuler un délai de 1 seconde pour le chargement des données
+            //pendant le dev c'est bien mais les retirer après
+            // await wait(1); // Simuler un délai de 1 seconde pour le chargement des données
             return fetch(localUrl,{
                 headers: {
                     Accept: 'application/json'
@@ -92,7 +93,8 @@ export function useInfiniteFetchQuery<T extends keyof API>(path: T) {
         initialPageParam: endpoint + path,
         // queryFn est une fonction qui récupère les données de l'api en fonction du paramètre pageParam, qui est l'url de la page à récupérer, et les convertit en json, puis les retourne
         queryFn: async ({ pageParam }) => {
-            await wait(1);
+            //pendant le dev c'est bien mais les retirer après
+            // await wait(1);
             return fetch(pageParam, {
                 headers: {
                     Accept: 'application/json'
