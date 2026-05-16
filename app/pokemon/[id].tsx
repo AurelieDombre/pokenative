@@ -13,6 +13,9 @@ import { PokemonSpec } from '@/components/pokemon/pokemonSpec'
 import { PokemonStat } from '@/components/pokemon/pokemonStat'
 import { ScrollView } from 'react-native';
 import {Audio} from 'expo-av'
+import PagerView from 'react-native-pager-view'
+import { useRef, useState } from 'react'
+
 
 const styleDetailPokemon = StyleSheet.create({
 
@@ -61,11 +64,69 @@ const styleDetailPokemon = StyleSheet.create({
     }
 })
 
-export default function Pokemon() {
+export default function Pokemon(){
+    const params = useLocalSearchParams() as {id: string}
+    const [id, setid] = useState(parseInt(params.id, 10))
+    const pager = useRef<PagerView>(null)
+    //Créer une réf qui va permetre de connaitre l'offset sur lequel on est = par défaut la page 1
+    const offset = useRef(1)
+    //changer l'offset et l'appliquer à l'id que quand le scroll/swipe est fini
+    const onPageSelected = (e: {nativeEvent: {position: number}}) => {
+        offset.current = e.nativeEvent.position -1
+    }
+    //Permet de récupérer l'état du scroll
+    const onChangePageScroll = (e: {nativeEvent: {pageScrollState: string}}) => {
+        if (e.nativeEvent.pageScrollState !== 'idle') {
+           return
+        }
+        //Permet de ne pas aller plus loin que le 1er pokémon
+        if (offset.current === -1 && id === 2){
+            return;
+        }
+        //Permet de ne pas aller plus loin que le dernier pokémon
+        if (offset.current === 1 && id === 150){
+            return;
+        }
+        if (offset.current !== 0){
+            setid(id + offset.current)
+            offset.current = 0;
+            pager.current?.setPageWithoutAnimation(1)
+        }
+    }
+    const onPrevious = () => {
+        pager.current?.setPage(0)
+    }
+    const onNext = () => {
+        pager.current?.setPage(2 + offset.current)
+    }
+
+    // Créer un swipe = toucher glisser avec le doit sur l'écran pour passer d'un pokémon à l'autre
+    return(
+        <PagerView
+            ref={pager}
+            onPageSelected={onPageSelected}
+            onPageScrollStateChanged={onChangePageScroll}
+            initialPage={1}
+            style={{flex:1}}
+        >
+            <PokemonView key={id - 1} id={id-1} onNext={onNext} onPrevious={onPrevious} />
+            <PokemonView key={id} id={id} onNext={onNext} onPrevious={onPrevious} />
+            <PokemonView key={id + 1} id={id+1} onNext={onNext} onPrevious={onPrevious}/>
+        </PagerView>
+    )
+}
+
+type Props = {
+    id: number,
+    onPrevious: () => void,
+    onNext: () => void,
+}
+
+function PokemonView({ id, onPrevious, onNext }: Props) {
     const colors = useThemeColors()
-    const params = useLocalSearchParams()as {id: string};
-    const {data: pokemon} = useFetchQuery("/pokemon/[id]", {id: params.id})
-    const {data: species} = useFetchQuery("/pokemon-species/[id]", {id: params.id})
+    // const params = useLocalSearchParams()as {id: string};
+    const {data: pokemon} = useFetchQuery("/pokemon/[id]", {id: id})
+    const {data: species} = useFetchQuery("/pokemon-species/[id]", {id: id})
     // Récupère la bio des pokémons via le language dans l'api ex: https://pokeapi.co/api/v2/pokemon-species/1/ "flavor_text": "A strange seed was\nplanted on its\nback at birth.\fThe plant sprouts\nand grows with\nthis POKéMON.",
     const bio = species?.flavor_text_entries
         ?.find(({language}) => language.name === 'en')
@@ -85,15 +146,8 @@ export default function Pokemon() {
         )
         await sound.playAsync();
     }
-    //transforme l'id string en int
-    const id = parseInt(params.id, 10)
-    const onPrevious = () => {
-        // Pour ne pas descendre en dessous de l'id 0 => Math.max(1)
-        router.replace({pathname : '/pokemon/[id]', params: {id: Math.max(id -1,1)}})
-    }
-    const onNext = () => {
-        router.replace({pathname : '/pokemon/[id]', params: {id: Math.min(id +1,150)}})
-    }
+
+
     const isFirst = id === 1
     const isLast = id === 150
 
@@ -114,7 +168,7 @@ export default function Pokemon() {
                             </Pressable>
 
                             <ThemedText variant={'subtitle2'} color={'grayWhite'}>
-                                #{params.id.padStart(3,'0')}
+                                #{id.toString().padStart(3,'0')}
                             </ThemedText>
 
                         </Row>
@@ -135,7 +189,7 @@ export default function Pokemon() {
                                 <Pressable onPress={onImagePress}>
                                     <Image
                                         style={styleDetailPokemon.artwork}
-                                        source={{ uri: getPokemonArtwork(params.id) }}
+                                        source={{ uri: getPokemonArtwork(id) }}
                                     />
                                 </Pressable>
                                 {isLast ?(
