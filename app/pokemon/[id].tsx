@@ -12,6 +12,7 @@ import { PokemonType } from '@/components/pokemon/pokemonType'
 import { PokemonSpec } from '@/components/pokemon/pokemonSpec'
 import { PokemonStat } from '@/components/pokemon/pokemonStat'
 import { ScrollView } from 'react-native';
+import {Audio} from 'expo-av'
 
 const styleDetailPokemon = StyleSheet.create({
 
@@ -26,13 +27,20 @@ const styleDetailPokemon = StyleSheet.create({
         top: 8,
     },
 
-    artwork: {
+    rowArtwok:{
         position: 'absolute',
         top: -140,
+        zIndex: 2,
+        justifyContent: "space-between",
+        left: 0,
+        right: 0,
+        paddingHorizontal:20,
+    },
+
+    artwork: {
         alignSelf: 'center',
         width: 200,
         height: 200,
-        zIndex: 2,
     },
     body:{
         marginTop: 180,
@@ -67,7 +75,25 @@ export default function Pokemon() {
     const colorType = mainType ? Colors.type[mainType] : colors.tint
     const typeOfPokemon = pokemon?.types ?? []
     // const pokemonStat = pokemon.stats
-
+    const onImagePress = async () => {
+        const cry = pokemon?.cries.latest
+        if (!cry) return
+    // "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/1.ogg"
+        const {sound} = await Audio.Sound.createAsync(
+            { uri: cry },
+            { shouldPlay : true }
+        )
+        await sound.playAsync();
+    }
+    //transforme l'id string en int
+    const id = parseInt(params.id, 10)
+    const onPrevious = () => {
+        // Pour ne pas descendre en dessous de l'id 0 => Math.max(1)
+        router.replace({pathname : '/pokemon/[id]', params: {id: Math.max(id -1,1)}})
+    }
+    const onNext = () => {
+        router.replace({pathname : '/pokemon/[id]', params: {id: Math.min(id +1,150)}})
+    }
 
     if (pokemon) {
         return (
@@ -91,15 +117,30 @@ export default function Pokemon() {
 
                         </Row>
                         <View style={styleDetailPokemon.body}>
-                            {/* Image flottante */}
-                            <Image
-                                style={styleDetailPokemon.artwork}
-                                source={{ uri: getPokemonArtwork(params.id) }}
-                            />
+                            <Row style={styleDetailPokemon.rowArtwok}>
+                                <Pressable onPress={onPrevious}>
+                                    <Image
+                                        source={require('@/assets/icons/detail_pokemon/chevron_left.png')}
+                                        width={24} height={24}
+                                    />
+                                </Pressable>
+                                <Pressable onPress={onImagePress}>
+                                    <Image
+                                        style={styleDetailPokemon.artwork}
+                                        source={{ uri: getPokemonArtwork(params.id) }}
+                                    />
+                                </Pressable>
+                                <Pressable onPress={onNext}>
+                                    <Image
+                                        source={require('@/assets/icons/detail_pokemon/chevron_right.png')}
+                                        width={24} height={24}
+                                    />
+                                </Pressable>
+                            </Row>
 
                             {/* Card */}
                             <Card style={styleDetailPokemon.card}>
-                                <Row style={styleDetailPokemon.tags}>
+                                <Row style={[styleDetailPokemon.tags, { height: 20 }]}>
                                     {typeOfPokemon.map((pokemonType) => (
                                         <PokemonType
                                             name={pokemonType.type.name as keyof typeof Colors.type}
@@ -134,7 +175,6 @@ export default function Pokemon() {
                                     {pokemon?.stats.map(stat =>
                                         <PokemonStat key={stat.stat.name} nameStat={stat.stat.name} value={stat.base_stat} color={colorType} />
                                     )}
-
                                 </View>
 
                             </Card>
@@ -142,10 +182,7 @@ export default function Pokemon() {
                     </View>
                 </RootView>
             </ScrollView>
-
         );
     }
-
-
 }
 

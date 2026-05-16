@@ -4,6 +4,7 @@ import {Row} from "@/components/row"
 import { ThemedText } from '@/components/ThemedText'
 import { useThemeColors } from '@/hooks/useThemesColors'
 import * as Progress from 'react-native-progress';
+import Animated, { useSharedValue } from 'react-native-reanimated'
 
 type Props = ViewProps & {
     color?: string
@@ -28,6 +29,8 @@ export function PokemonStat({style, nameStat, value, color, ...rest}: Props) {
     //Ex : 45/255 = 0.176 soit 17.6%
     const progress = Math.min(Math.max((value ?? 0) / 255, 0), 1);
     const shortName = statLabels[nameStat ?? ''] ?? nameStat;
+    //Faire "évoluer" les pokémon avec animated
+    const sharedValue = useSharedValue(value)
 
     return (
         <Row style={[style, styles.root]} {...rest}>
